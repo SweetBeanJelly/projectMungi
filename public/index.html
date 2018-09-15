@@ -1,6 +1,9 @@
 <html>
 
 <head>
+	<script src="http://code.highcharts.com/highcharts.js"></script>
+	<script src="http://code.highcharts.com/modules/exporting.js"></script>
+	
 	<script language="JavaScript">
 		var appcondition = 0;
 
@@ -192,8 +195,78 @@
         </td>
     </tr>
 </table>
-  
-    <script src="raphael-2.1.4.min.js"></script>
+	<div id="container" style="min-width: 400px; height:400px; margin:0 auto"></div>
+    <script>
+	    Highcharts.setOptions({
+		    global:{
+			    useUTC:fasle
+		    }
+	    });
+	    Highcharts.chart('container',{
+		    chart:{
+			    type: 'spline',
+			    animation: HighCharts.svg,
+			    marginRight:10,
+			    events:{
+				    load: function(){
+					    var aa = document.getElementById("temp").innerHTML;
+					    var series = this.series[0];
+					    setInterval(function(){
+						    var x = (new Date()).getTime(),
+							y = aa;
+						    series.addPoint([x,y],true,true);
+					    },1000);
+				    }
+			    }
+		    },
+		    title:{
+			    text: 'PM2.5'
+		    },
+		    xAxis: {
+			    type: 'datetime',
+			    tickPixelInterval: 150
+		    },
+		    yAxis:{
+			    title:{
+				    text: 'Value'
+			    },
+			    plotLines: [{
+				    value: 0,
+				    width: 1,
+				    color: '#808080'
+			    }]
+		    },
+		    tooltip:{
+			    formatter: function(){
+				    return '<b>' + this.series.name + '</b><br/>' +
+					    Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x)
+				    Highcharts.numberFormat(this.y,2);
+			    }
+		    },
+		    legend:{
+			    enabled: false
+		    },
+		    exporting:{
+			    enabled:false
+		    },
+		    series: [{
+			    name: 'pm2.5',
+			    data: (function(){
+				    var date = [],
+					time = (new Date()).getTime(),
+					i;
+				    for(i = -19; i <= 0; i+= 1){
+					    data.push({
+						    x: time + i * 1000,
+						    y: 20
+					    });
+				    }
+				    return data;
+			    }())
+		    }]
+	    });
+	</script>
+	<script src="raphael-2.1.4.min.js"></script>
     <script src="justgage.js"></script>
     <script>
     var g5;
